@@ -15,7 +15,7 @@ const config: QuartzConfig = {
       provider: "null",
     },
     locale: "en-US",
-    baseUrl: "zenodotus280.github.io/apl",
+    baseUrl: "patternlanguage.cc",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "modified",
     theme: {
