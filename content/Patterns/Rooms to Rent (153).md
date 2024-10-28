@@ -1,5 +1,5 @@
 ### Problem
->As the life in a building changes, the need for space shrinks and swells cyclically. The building must be able to adapt to this irregular increase and degrease in the need for space.
+>As the life in a building changes, the need for space shrinks and swells cyclically. The building must be able to adapt to this irregular increase and decrease in the need for space.
 
 ### Solution
 >Make at least some part of the building rentable: give it a private entrance over and above its regular connection to the rest of the house. Make sure that the regular entrance can be easily closed off without destroying the circulation in the house, and make sure that a bathroom can be directly reached from this room without having to go through the main house.
@@ -10,4 +10,8 @@
 Place the rooms to rent in such a way that they can double as a [[Teenager's Cottage (154)]], or an [[Old Age Cottage (155)]], or a [[Home Workshop (157)]]; give the private entrance an [[Entrance Transition (112)]], and if the space is on an upper floor, give it direct access to the street by means of [[Open Stairs (158)]]. And give the rooms themselves [[Light on Two Sides of Every Room (159)]] and [[The Shape of Indoor Space (191)]] ...
 
 ---
-Reference for full-text of Pattern: p. 720 #low-confidence 
+
+> [!cite]- Alexander, Christopher. _A Pattern Language: Towns, Buildings, Construction_. Oxford University Press, 1977, p. 720.
+> #low-confidence
+>
+> #APL/Building-Patterns/Outbuildings
