@@ -9,6 +9,7 @@ Want to see what Quartz can do? Here are some cool community gardens:
 - [Socratica Toolbox](https://toolbox.socratica.info/)
 - [Morrowind Modding Wiki](https://morrowind-modding.github.io/)
 - [Aaron Pham's Garden](https://aarnphm.xyz/)
+- [The Pond](https://turntrout.com/welcome)
 - [Pelayo Arbues' Notes](https://pelayoarbues.com/)
 - [Stanford CME 302 Numerical Linear Algebra](https://ericdarve.github.io/NLA/)
 - [A Pattern Language - Christopher Alexander (Architecture)](https://patternlanguage.cc/)
