@@ -183,15 +183,26 @@ export function slugTag(tag: string) {
 }
 
 export function joinSegments(...args: string[]): string {
-  return args
+  if (args.length === 0) {
+    return ""
+  }
+
+  let joined = args
     .filter((segment) => segment !== "")
-    .map((segment, index) =>
-      index === 0
-        ? // Deduplicate but not remove leading slashes for first segment
-          segment.replace(/\/+$/g, "").replace(/^\/\/+/g, "/")
-        : segment.replace(/^\/+|\/+$/g, ""),
-    )
+    .map((segment) => stripSlashes(segment))
     .join("/")
+
+  // if the first segment starts with a slash, add it back
+  if (args[0].startsWith("/")) {
+    joined = "/" + joined
+  }
+
+  // if the last segment is a folder, add a trailing slash
+  if (args[args.length - 1].endsWith("/")) {
+    joined = joined + "/"
+  }
+
+  return joined
 }
 
 export function getAllSegmentPrefixes(tags: string): string[] {
