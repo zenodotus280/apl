@@ -185,8 +185,13 @@ export function slugTag(tag: string) {
 export function joinSegments(...args: string[]): string {
   return args
     .filter((segment) => segment !== "")
+    .map((segment, index) =>
+      index === 0
+        ? // Deduplicate but not remove leading slashes for first segment
+          segment.replace(/\/+$/g, "").replace(/^\/\/+/g, "/")
+        : segment.replace(/^\/+|\/+$/g, ""),
+    )
     .join("/")
-    .replace(/\/\/+/g, "/")
 }
 
 export function getAllSegmentPrefixes(tags: string): string[] {
