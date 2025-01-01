@@ -11,9 +11,6 @@ import { JSResource, CSSResource } from "../../util/resources"
 import calloutScript from "../../components/scripts/callout.inline.ts"
 // @ts-ignore
 import checkboxScript from "../../components/scripts/checkbox.inline.ts"
-// @ts-ignore
-import mermaidExtensionScript from "../../components/scripts/mermaid.inline.ts"
-import mermaidStyle from "../../components/styles/mermaid.inline.scss"
 import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
@@ -513,9 +510,10 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       if (opts.mermaid) {
         plugins.push(() => {
-          return (tree: Root, _file) => {
+          return (tree: Root, file) => {
             visit(tree, "code", (node: Code) => {
               if (node.lang === "mermaid") {
+                file.data.hasMermaidDiagram = true
                 node.data = {
                   hProperties: {
                     className: ["mermaid"],
@@ -813,19 +811,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         })
       }
 
-      if (opts.mermaid) {
-        js.push({
-          script: mermaidExtensionScript,
-          loadTime: "afterDOMReady",
-          moduleType: "module",
-          contentType: "inline",
-        })
-        css.push({
-          content: mermaidStyle,
-          inline: true,
-        })
-      }
-
       return { js, css }
     },
   }
@@ -835,5 +820,6 @@ declare module "vfile" {
   interface DataMap {
     blocks: Record<string, Element>
     htmlAst: HtmlRoot
+    hasMermaidDiagram: boolean | undefined
   }
 }
