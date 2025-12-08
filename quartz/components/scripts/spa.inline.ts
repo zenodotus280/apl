@@ -56,8 +56,10 @@ function startLoading() {
   }, 100)
 }
 
+let isNavigating = false
 let p: DOMParser
-async function navigate(url: URL, isBack: boolean = false) {
+async function _navigate(url: URL, isBack: boolean = false) {
+  isNavigating = true
   startLoading()
   p = p || new DOMParser()
   const contents = await fetchCanonical(url)
@@ -74,6 +76,10 @@ async function navigate(url: URL, isBack: boolean = false) {
     })
 
   if (!contents) return
+
+  // notify about to nav
+  const event: CustomEventMap["prenav"] = new CustomEvent("prenav", { detail: {} })
+  document.dispatchEvent(event)
 
   // cleanup old
   cleanupFns.forEach((fn) => fn())
@@ -108,10 +114,10 @@ async function navigate(url: URL, isBack: boolean = false) {
     }
   }
 
-  // now, patch head
-  const elementsToRemove = document.head.querySelectorAll(":not([spa-preserve])")
+  // now, patch head, re-executing scripts
+  const elementsToRemove = document.head.querySelectorAll(":not([data-persist])")
   elementsToRemove.forEach((el) => el.remove())
-  const elementsToAdd = html.head.querySelectorAll(":not([spa-preserve])")
+  const elementsToAdd = html.head.querySelectorAll(":not([data-persist])")
   elementsToAdd.forEach((el) => document.head.appendChild(el))
 
   // delay setting the url until now
@@ -122,6 +128,19 @@ async function navigate(url: URL, isBack: boolean = false) {
 
   notifyNav(getFullSlug(window))
   delete announcer.dataset.persist
+}
+
+async function navigate(url: URL, isBack: boolean = false) {
+  if (isNavigating) return
+  isNavigating = true
+  try {
+    await _navigate(url, isBack)
+  } catch (e) {
+    console.error(e)
+    window.location.assign(url)
+  } finally {
+    isNavigating = false
+  }
 }
 
 window.spaNavigate = navigate
@@ -141,21 +160,13 @@ function createRouter() {
         return
       }
 
-      try {
-        navigate(url, false)
-      } catch (e) {
-        window.location.assign(url)
-      }
+      navigate(url, false)
     })
 
     window.addEventListener("popstate", (event) => {
       const { url } = getOpts(event) ?? {}
       if (window.location.hash && window.location.pathname === url?.pathname) return
-      try {
-        navigate(new URL(window.location.toString()), true)
-      } catch (e) {
-        window.location.reload()
-      }
+      navigate(new URL(window.location.toString()), true)
       return
     })
   }

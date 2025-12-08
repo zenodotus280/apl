@@ -21,6 +21,7 @@ export interface Translation {
     title: string
     description: string
   }
+  direction?: "ltr" | "rtl"
   components: {
     callout: CalloutTranslation
     backlinks: {
@@ -30,6 +31,9 @@ export interface Translation {
     themeToggle: {
       lightMode: string
       darkMode: string
+    }
+    readerMode: {
+      title: string
     }
     explorer: {
       title: string
