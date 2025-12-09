@@ -143,23 +143,73 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     if (showTags) tags.forEach((tag) => neighbourhood.add(tag))
   }
 
-  const nodes = [...neighbourhood].map((url) => {
-    const text = url.startsWith("tags/") ? "#" + url.substring(5) : (data.get(url)?.title ?? url)
-    return {
-      id: url,
-      text,
-      tags: data.get(url)?.tags ?? [],
-    }
-  })
+// START OF MY GRAPH CHANGES 2025-12-08
+// ORIGINAL FROM QUARTZ
+//  const nodes = [...neighbourhood].map((url) => {
+//    const text = url.startsWith("tags/") ? "#" + url.substring(5) : (data.get(url)?.title ?? url)
+//    return {
+//      id: url,
+//      text,
+//      tags: data.get(url)?.tags ?? [],
+//    }
+//  })
+
+
+// INDEX AND TAG-FREE GRAPH (part 1 of 2)
+  const nodes = [...neighbourhood]
+    .filter((url) => {
+      // Exclude index node and tags from graph
+          const isIndex = url === "/" || url === "index" || url.endsWith("/index");
+          const isTag = url.startsWith("tags/");
+          return !isIndex && !isTag;
+    })
+    .map((url) => {
+      const text = url.startsWith("tags/") ? "#" + url.substring(5) : (data.get(url)?.title ?? url)
+      return {
+        id: url,
+        text,
+        tags: data.get(url)?.tags ?? [],
+      }
+    })
+
+
+// ORIGINAL FROM QUARTZ
+//  const graphData: { nodes: NodeData[]; links: LinkData[] } = {
+//    nodes,
+//    links: links
+//      .filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target))
+//      .map((l) => ({
+//        source: nodes.find((n) => n.id === l.source)!,
+//        target: nodes.find((n) => n.id === l.target)!,
+//      })),
+//  }
+
+
+// INDEX AND TAG-FREE (part 2 of 2)
   const graphData: { nodes: NodeData[]; links: LinkData[] } = {
     nodes,
     links: links
-      .filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target))
-      .map((l) => ({
-        source: nodes.find((n) => n.id === l.source)!,
-        target: nodes.find((n) => n.id === l.target)!,
-      })),
+      .filter((l) => {
+        // Exclude links that reference the index node or tags
+        const sourceIsIndex = l.source === "/" || l.source === "index" || l.source.endsWith("/index");
+        const targetIsIndex = l.target === "/" || l.target === "index" || l.target.endsWith("/index");
+        const sourceIsTag = l.source.startsWith("tags/");
+        const targetIsTag = l.target.startsWith("tags/");
+        return !sourceIsIndex && !targetIsIndex && !sourceIsTag && !targetIsTag && neighbourhood.has(l.source) && neighbourhood.has(l.target);
+      })
+      .map((l) => {
+        const sourceNode = nodes.find((n) => n.id === l.source);
+        const targetNode = nodes.find((n) => n.id === l.target);
+        // Only create link if both nodes exist (safety check)
+        if (!sourceNode || !targetNode) return null;
+        return {
+          source: sourceNode,
+          target: targetNode,
+        };
+      })
+      .filter((l): l is LinkData => l !== null), // Remove any null links
   }
+// END OF MY GRAPH CHANGES 2025-12-08
 
   const width = graph.offsetWidth
   const height = Math.max(graph.offsetHeight, 250)
